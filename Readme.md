@@ -46,10 +46,10 @@
 
     docker run -d --name web-for-testing -p 8181:8181 jamarton/web-for-testing
 
-## Servidor de pruebas
+### Servidor web para pruebas (sin contenedores)
 
 ```sh
-git clone https://github.com/jmagit/Web4Testing.git Web4Testing
+git submodule add https://github.com/jmagit/Web4Testing.git Web4Testing
 cd Web4Testing
 npm install
 npm start
