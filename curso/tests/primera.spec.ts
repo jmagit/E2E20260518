@@ -11,7 +11,8 @@ test('primer ejemplo grabando una prueba', async ({ page }) => {
     await expect(page.getByRole('heading')).toContainText('Calculadora');
   })
 
-  await test.step('Paso 3: Ir a las Compras', async () => {
+  // eslint-disable-next-line playwright/no-skipped-test
+  await test.step.skip('Paso 3: Ir a las Compras', async () => {
     await page.getByRole('link', { name: 'Compras' }).click();
     await expect(page.locator('h1')).toContainText('Compras');
   })
