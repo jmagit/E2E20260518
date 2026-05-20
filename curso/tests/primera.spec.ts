@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('primer ejemplo grabando una prueba', async ({ page }) => {
   await test.step('Paso 1: Ir a la pagina principal', async () => {
-    await page.goto('http://localhost:8181/');
+    await page.goto('/');
     await expect(page.getByRole('heading', { name: 'Entorno de pruebas Web4Testing' })).toBeVisible();
   })
 

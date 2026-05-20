@@ -4,7 +4,7 @@ test.describe('Ejemplo de que esta en edad laboral', () => {
     test.beforeEach(async ({ page, browser }, testInfo) => {
         test.info().annotations.push({ type: 'browser version', description: browser.version(), });
         console.log(`Running ${testInfo.title}`);
-        await page.goto('http://localhost:8181/calculadora');
+        await page.goto('/calculadora');
     });
 
     test.describe('Casos validos', () => {
@@ -30,6 +30,8 @@ test.describe('Ejemplo de que esta en edad laboral', () => {
 
         test('edad sea 68 años', async ({ page }) => {
             await expect(page.getByRole('heading')).toContainText('Calculadora');
+            // expect(0.1 + 0.2).toBe(0.3)
+            //expect(1 - 0.9).toBe(0.1)
         })
 
     });
