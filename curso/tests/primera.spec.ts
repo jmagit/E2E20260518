@@ -35,3 +35,21 @@ test('primer ejemplo grabando una prueba', async ({ page }) => {
   })
 
 });
+
+test.describe('Opciones del menu', () => {
+
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+  });
+
+  [
+    { name: 'Inicio', title: 'Entorno de pruebas Web4Testing' },
+    { name: 'Compras', title: 'Compras' },
+    { name: 'Contactos', title: 'Contactos' },
+  ].forEach(({ name, title }) => {
+    test(`Opción: ${name}`, async ({ page }) => {
+      await page.getByRole('link', { name }).click();
+      await expect(page.getByRole('heading')).toContainText(title);
+    });
+  });
+})
