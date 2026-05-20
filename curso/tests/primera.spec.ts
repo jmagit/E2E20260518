@@ -48,8 +48,8 @@ test.describe('Opciones del menu', () => {
     { name: 'Contactos', title: 'Contactos' },
   ].forEach(({ name, title }) => {
     test(`Opción: ${name}`, async ({ page }) => {
-      await page.getByRole('link', { name }).click();
-      await expect(page.getByRole('heading')).toContainText(title);
+    await page.getByRole('link', { name }).click();
+    await expect(page.getByRole('heading', { name: title })).toBeVisible();
     });
   });
 })
