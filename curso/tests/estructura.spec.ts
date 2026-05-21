@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import test, { expect } from '@playwright/test';
 
 test.describe('Ejemplo de que esta en edad laboral', () => {

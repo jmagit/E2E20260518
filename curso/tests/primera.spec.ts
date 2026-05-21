@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import casos from '../fixtures/opciones.json';
 
 test('primer ejemplo grabando una prueba', async ({ page }) => {
   await test.step('Paso 1: Ir a la pagina principal', async () => {
@@ -46,8 +47,16 @@ test.describe('Opciones del menu', () => {
     { name: 'Inicio', title: 'Entorno de pruebas Web4Testing' },
     { name: 'Compras', title: 'Compras' },
     { name: 'Contactos', title: 'Contactos' },
+    { name: 'Tareas', title: 'Lista de Tareas' },
   ].forEach(({ name, title }) => {
     test(`Opción: ${name}`, async ({ page }) => {
+    await page.getByRole('link', { name }).click();
+    await expect(page.getByRole('heading', { name: title })).toBeVisible();
+    });
+  });
+
+  casos.forEach(({ name, title }) => {
+    test(`Leída Opción: ${name}`, async ({ page }) => {
     await page.getByRole('link', { name }).click();
     await expect(page.getByRole('heading', { name: title })).toBeVisible();
     });
