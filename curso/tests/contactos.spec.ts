@@ -15,34 +15,52 @@ test('llega a la página de contactos', { tag: '@smoke' }, async ({ page }) => {
 });
 
 test.describe('Consultas de contacto', () => {
-  
-    test('se ve bien el usuario', async ({ page }) => {
-        await page.getByRole('button', { name: 'Dr. Adolf Dunster' }).describe('Botón ver contacto').click();
-        await expect.soft(page.locator('h4'), 'Nombre del contacto').toContainText('xDr. Adolf Dunster');
-        await expect.soft(page.locator('#listado')).toContainText('Persona conflictiva');
-        await expect.soft(page.getByText('Persona conflictiva')).toHaveClass('xtext-danger')
-        await expect.soft(page.locator('#listado')).toContainText('699 455 408 adunster1a@amazon.co.uk 01/09/1979');
-        await expect.soft(page.getByRole('img', { name: 'Foto de Adolf Dunster' })).toBeVisible();
-        
-    });
-    
-    test('foto', async ({ page }) => {
-        await page.getByRole('button', { name: 'Dr. Adolf Dunster' }).click();
-        await expect(page).toHaveScreenshot('contacto-view.png');
-    });
-    
+
+  test('se ve bien el usuario', async ({ page }) => {
+    await page.getByRole('button', { name: 'Dr. Adolf Dunster' }).describe('Botón ver contacto').click();
+    await expect.soft(page.locator('h4'), 'Nombre del contacto').toContainText('Dr. Adolf Dunster');
+    await expect.soft(page.locator('#listado')).toContainText('Persona conflictiva');
+    await expect.soft(page.getByText('Persona conflictiva'), 'la clase css que lo pinta en rojo').toHaveClass('text-danger')
+    await expect.soft(page.locator('#listado')).toContainText('699 455 408 adunster1a@amazon.co.uk 01/09/1979');
+    await expect.soft(page.getByRole('img', { name: 'Foto de Adolf Dunster' })).toBeVisible();
+
+  });
+
+  test('se ve bien el usuario con aria', async ({ page }) => {
+    await page.getByRole('button', { name: 'Dr. Adolf Dunster' }).describe('Botón ver contacto').click();
+    await expect(page.getByRole('main')).toMatchAriaSnapshot(`
+          - heading "Contactos" [level=1]
+          - img "Foto de Adolf Dunster"
+          - heading "Dr. Adolf Dunster" [level=4]
+          - paragraph:  Persona conflictiva
+          - paragraph:
+            - text:  699 455 408 
+            - link "adunster1a@amazon.co.uk":
+              - /url: mailto:adunster1a@amazon.co.uk
+            - text:  01/09/1979
+          - button "Social"
+          - button "Social"
+          - button "Volver"
+          `);
+  });
+
+  test('foto', async ({ page }) => {
+    await page.getByRole('button', { name: 'Dr. Adolf Dunster' }).click();
+    await expect(page).toHaveScreenshot('contacto-view.png');
+  });
+
 });
 
 test('prueba la paginación de los contactos', { tag: '@smoke' }, async ({ page }) => {
   await expect(page.getByRole('columnheader', { name: 'Lista de contactos' })).toBeVisible();
-  expect(await page.getByRole('row').count()).toBe(8)
+  await expect(page.getByRole('row')).toHaveCount(8)
   await expect(page.getByText('Dr. Adolf Dunster Tlfn.: 699')).toBeVisible();
   await page.getByRole('link', { name: '3' }).click();
   await expect(page.getByText('Sr. Chrissy Madgin Tlfn.: 721')).toBeVisible();
   await page.getByRole('link').filter({ hasText: 'siguiente' }).click();
   await expect(page.getByText('Excmo. Dalli Orthmann Tlfn.:')).toBeVisible();
   await page.getByRole('link').filter({ hasText: 'último' }).click();
-  expect(await page.getByRole('row').count()).toBe(3)
+  await expect(page.getByRole('row')).toHaveCount(3)
   await page.getByRole('link').filter({ hasText: 'anterior' }).click();
   await expect(page.getByText('Sr. Teodorico Soppit Tlfn.:')).toBeVisible();
   await page.getByRole('link').filter({ hasText: /^inicio$/ }).click();
@@ -63,57 +81,63 @@ test('consulta un contacto', async ({ page }) => {
     `);
 });
 
-test('añadir un contacto', { tag: '@smoke' }, async ({ page, request }) => {
-  await request.delete('/api/contactos/101', { ignoreHTTPSErrors: true })
-  await page.getByRole('button', { name: 'Añadir' }).describe('pulsar el botón de añadir').click();
-  await page.getByRole('spinbutton', { name: 'Código:' }).describe('meter el código incorrecto').fill('-1');
-  await page.getByRole('spinbutton', { name: 'Código:' }).press('Tab');
-  await expect(page.locator('#err_id'), 'Expect Sale el mensaje de error').toContainText('El valor debe ser superior o igual a 0');
-  await page.getByRole('spinbutton', { name: 'Código:' }).fill('0');
-  await page.getByRole('spinbutton', { name: 'Código:' }).blur();
-  await expect(page.locator('#err_id')).toBeHidden();
-  await page.getByLabel('Tratamiento:').selectOption('Srta.');
-  await page.getByRole('textbox', { name: 'Nombre:' }).fill('1234');
-  await page.getByRole('textbox', { name: 'Apellidos:' }).fill('98765 4321');
-  await page.getByRole('textbox', { name: 'Teléfono:' }).fill('987 654 321');
-  await page.getByRole('textbox', { name: 'Correo:' }).fill('a@a');
-  await page.getByRole('radio', { name: 'Mujer' }).check();
-  await page.getByRole('checkbox', { name: 'Conflictivo' }).check();
-  await page.getByRole('textbox', { name: 'Avatar:' }).fill('https://randomuser.me/api/portraits/women/1.jpg');
-  await btnEnviar.click();
-});
+test.describe('Añadir limpiamente', () => {
 
-test('añadir un mal contacto', async ({ page }) => {
-  await page.getByRole('button', { name: 'Añadir' }).click();
-  await btnEnviar.click();
-  await expect(page.locator('#err_id')).toBeVisible();
-  await expect(page.locator('#err_id')).toContainText('Completa este campo');
-  await expect(page.locator('#err_nombre')).toBeVisible();
-  await expect(page.locator('#err_nombre')).toContainText('Completa este campo');
+  test.afterEach('limpiar datos datos', async ({ request }) => {
+    await request.delete('/api/contactos/101', { ignoreHTTPSErrors: true })
+  })
 
-  await page.getByRole('spinbutton', { name: 'Código:' }).fill('-1');
-  await page.getByRole('spinbutton', { name: 'Código:' }).press('Tab');
-  await expect(page.locator('#err_id')).toBeVisible();
-  await expect(page.locator('#err_id')).toContainText('El valor debe ser superior o igual a 0');
-  await page.getByRole('spinbutton', { name: 'Código:' }).fill('0');
-  await page.getByRole('spinbutton', { name: 'Código:' }).press('Tab');
-  await expect(page.locator('#err_id')).toBeHidden();
+  test('añadir un contacto', { tag: '@smoke' }, async ({ page, request }) => {
+    await request.delete('/api/contactos/101', { ignoreHTTPSErrors: true })
+    await page.getByRole('button', { name: 'Añadir' }).describe('pulsar el botón de añadir').click();
+    await page.getByRole('spinbutton', { name: 'Código:' }).describe('meter el código incorrecto').fill('-1');
+    await page.getByRole('spinbutton', { name: 'Código:' }).press('Tab');
+    await expect(page.locator('#err_id'), 'Expect Sale el mensaje de error').toContainText('El valor debe ser superior o igual a 0');
+    await page.getByRole('spinbutton', { name: 'Código:' }).fill('0');
+    await page.getByRole('spinbutton', { name: 'Código:' }).blur();
+    await expect(page.locator('#err_id')).toBeHidden();
+    await page.getByLabel('Tratamiento:').selectOption('Srta.');
+    await page.getByRole('textbox', { name: 'Nombre:' }).fill('1234');
+    await page.getByRole('textbox', { name: 'Apellidos:' }).fill('98765 4321');
+    await page.getByRole('textbox', { name: 'Teléfono:' }).fill('987 654 321');
+    await page.getByRole('textbox', { name: 'Correo:' }).fill('a@a');
+    await page.getByRole('radio', { name: 'Mujer' }).check();
+    await page.getByRole('checkbox', { name: 'Conflictivo' }).check();
+    await page.getByRole('textbox', { name: 'Avatar:' }).fill('https://randomuser.me/api/portraits/women/1.jpg');
+    await btnEnviar.click();
+  });
 
-  await page.getByRole('textbox', { name: 'Nombre:' }).fill('1');
-  await page.getByRole('textbox', { name: 'Apellidos:' }).fill('1');
-  await page.getByRole('textbox', { name: 'Correo:' }).fill('1');
-  await page.getByRole('textbox', { name: 'F. Nacimiento:' }).pressSequentially('310');
-  await page.getByRole('textbox', { name: 'F. Nacimiento:' }).press('Tab');
-  await page.getByRole('textbox', { name: 'Avatar:' }).fill('1');
+  test('añadir un mal contacto', async ({ page }) => {
+    await page.getByRole('button', { name: 'Añadir' }).click();
+    await btnEnviar.click();
+    await expect(page.locator('#err_id')).toBeVisible();
+    await expect(page.locator('#err_id')).toContainText('Completa este campo');
+    await expect(page.locator('#err_nombre')).toBeVisible();
+    await expect(page.locator('#err_nombre')).toContainText('Completa este campo');
 
-  await page.getByRole('button', { name: 'Volver' }).focus();
+    await page.getByRole('spinbutton', { name: 'Código:' }).fill('-1');
+    await page.getByRole('spinbutton', { name: 'Código:' }).press('Tab');
+    await expect(page.locator('#err_id')).toBeVisible();
+    await expect(page.locator('#err_id')).toContainText('El valor debe ser superior o igual a 0');
+    await page.getByRole('spinbutton', { name: 'Código:' }).fill('0');
+    await page.getByRole('spinbutton', { name: 'Código:' }).press('Tab');
+    await expect(page.locator('#err_id')).toBeHidden();
 
-  // await expect(page.locator('#err_nombre')).toContainText('Aumenta la longitud de este texto a 2 caracteres o más (actualmente, el texto tiene 1 carácter).');
-  // await expect(page.locator('#err_apellidos')).toContainText('Aumenta la longitud de este texto a 2 caracteres o más (actualmente, el texto tiene 1 carácter).');
-  // await expect(page.locator('#err_email')).toContainText('Incluye un signo "@" en la dirección de correo electrónico. La dirección "1" no incluye el signo "@".');
-  // await expect(page.locator('#err_avatar')).toContainText('Introduce una URL');
+    await page.getByRole('textbox', { name: 'Nombre:' }).fill('1');
+    await page.getByRole('textbox', { name: 'Apellidos:' }).fill('1');
+    await page.getByRole('textbox', { name: 'Correo:' }).fill('1');
+    await page.getByRole('textbox', { name: 'F. Nacimiento:' }).pressSequentially('310');
+    await page.getByRole('textbox', { name: 'F. Nacimiento:' }).press('Tab');
+    await page.getByRole('textbox', { name: 'Avatar:' }).fill('1');
 
-  await expect(page.getByRole('main')).toMatchAriaSnapshot(`
+    await page.getByRole('button', { name: 'Volver' }).focus();
+
+    // await expect(page.locator('#err_nombre')).toContainText('Aumenta la longitud de este texto a 2 caracteres o más (actualmente, el texto tiene 1 carácter).');
+    // await expect(page.locator('#err_apellidos')).toContainText('Aumenta la longitud de este texto a 2 caracteres o más (actualmente, el texto tiene 1 carácter).');
+    // await expect(page.locator('#err_email')).toContainText('Incluye un signo "@" en la dirección de correo electrónico. La dirección "1" no incluye el signo "@".');
+    // await expect(page.locator('#err_avatar')).toContainText('Introduce una URL');
+
+    await expect(page.getByRole('main')).toMatchAriaSnapshot(`
     - text: Datos inválidos
     - button
     - heading "Contactos" [level=1]
@@ -136,37 +160,39 @@ test('añadir un mal contacto', async ({ page }) => {
     - button "Volver"
     `);
 
-  // await page.getByRole('textbox', { name: 'Nombre:' }).fill('12');
-  // await page.getByRole('textbox', { name: 'Apellidos:' }).fill('12');
-  // await page.getByRole('textbox', { name: 'Correo:' }).fill('a@a');
-  // await page.getByRole('textbox', { name: 'Avatar:' }).fill('http://www.example.com/image.png');
+    // await page.getByRole('textbox', { name: 'Nombre:' }).fill('12');
+    // await page.getByRole('textbox', { name: 'Apellidos:' }).fill('12');
+    // await page.getByRole('textbox', { name: 'Correo:' }).fill('a@a');
+    // await page.getByRole('textbox', { name: 'Avatar:' }).fill('http://www.example.com/image.png');
 
-  await page.getByRole('button', { name: 'Volver' }).focus();
-});
+    await page.getByRole('button', { name: 'Volver' }).focus();
+  });
 
-test('añadir un mal contacto - con instantáneas', async ({ page }) => {
-  await page.getByRole('button', { name: 'Añadir' }).click();
-  await btnEnviar.click();
-  await expect(page.getByRole('main')).toHaveScreenshot('inicial.png');
+  test('añadir un mal contacto - con instantáneas', async ({ page }) => {
+    await page.getByRole('button', { name: 'Añadir' }).click();
+    await btnEnviar.click();
+    await expect(page.getByRole('main')).toHaveScreenshot('inicial.png');
 
-  await page.getByRole('spinbutton', { name: 'Código:' }).fill('-1');
-  await page.getByRole('textbox', { name: 'Nombre:' }).fill('1');
-  await page.getByRole('textbox', { name: 'Apellidos:' }).fill('1');
-  await page.getByRole('textbox', { name: 'Correo:' }).fill('1');
-  await page.getByRole('textbox', { name: 'F. Nacimiento:' }).pressSequentially('310');
-  await page.getByRole('textbox', { name: 'F. Nacimiento:' }).press('Tab');
-  await page.getByRole('textbox', { name: 'Avatar:' }).fill('1');
-  await page.getByRole('button', { name: 'Volver' }).focus();
-  await expect(page.getByRole('main')).toHaveScreenshot('con-errores.png');
+    await page.getByRole('spinbutton', { name: 'Código:' }).fill('-1');
+    await page.getByRole('textbox', { name: 'Nombre:' }).fill('1');
+    await page.getByRole('textbox', { name: 'Apellidos:' }).fill('1');
+    await page.getByRole('textbox', { name: 'Correo:' }).fill('1');
+    await page.getByRole('textbox', { name: 'F. Nacimiento:' }).pressSequentially('310');
+    await page.getByRole('textbox', { name: 'F. Nacimiento:' }).press('Tab');
+    await page.getByRole('textbox', { name: 'Avatar:' }).fill('1');
+    await page.getByRole('button', { name: 'Volver' }).focus();
+    await expect(page.getByRole('main')).toHaveScreenshot('con-errores.png');
 
-  await page.getByRole('spinbutton', { name: 'Código:' }).fill('0');
-  await page.getByRole('textbox', { name: 'Nombre:' }).fill('12');
-  await page.getByRole('textbox', { name: 'Apellidos:' }).fill('12');
-  await page.getByRole('textbox', { name: 'Correo:' }).fill('a@a');
-  await page.getByRole('textbox', { name: 'F. Nacimiento:' }).fill('2008-09-28');
-  await page.getByRole('textbox', { name: 'Avatar:' }).fill('http://www.example.com/image.png');
-  await page.getByRole('button', { name: 'Volver' }).focus();
-  await expect(page.getByRole('main')).toHaveScreenshot('sin-errores.png');
+    await page.getByRole('spinbutton', { name: 'Código:' }).fill('0');
+    await page.getByRole('textbox', { name: 'Nombre:' }).fill('12');
+    await page.getByRole('textbox', { name: 'Apellidos:' }).fill('12');
+    await page.getByRole('textbox', { name: 'Correo:' }).fill('a@a');
+    await page.getByRole('textbox', { name: 'F. Nacimiento:' }).fill('2008-09-28');
+    await page.getByRole('textbox', { name: 'Avatar:' }).fill('http://www.example.com/image.png');
+    await page.getByRole('button', { name: 'Volver' }).focus();
+    await expect(page.getByRole('main')).toHaveScreenshot('sin-errores.png');
+  });
+
 });
 
 test.describe('modifica o borra datos existentes', () => {
@@ -176,7 +202,7 @@ test.describe('modifica o borra datos existentes', () => {
     const response = await request.post('/api/contactos', {
       headers: { "content-type": "application/json" },
       data: {
-        "id": 0, 
+        "id": 0,
         "tratamiento": "Srta.",
         "nombre": "1234",
         "apellidos": "98765 4321",
@@ -184,7 +210,7 @@ test.describe('modifica o borra datos existentes', () => {
         "email": "a@a",
         "nacimiento": "2002-12-21",
         "sexo": "M",
-        "conflictivo": true, 
+        "conflictivo": true,
         "avatar": "https://randomuser.me/api/portraits/women/1.jpg"
       }
     })
