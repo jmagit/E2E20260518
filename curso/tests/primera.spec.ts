@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import casos from '../fixtures/opciones.json';
+import { AppPage } from '../utils/app.page';
 
 test('primer ejemplo grabando una prueba', async ({ page }) => {
   await test.step('Paso 1: Ir a la pagina principal', async () => {
@@ -50,15 +51,37 @@ test.describe('Opciones del menu', () => {
     { name: 'Tareas', title: 'Lista de Tareas' },
   ].forEach(({ name, title }) => {
     test(`Opción: ${name}`, async ({ page }) => {
-    await page.getByRole('link', { name }).click();
-    await expect(page.getByRole('heading', { name: title })).toBeVisible();
+      await page.getByRole('link', { name }).click();
+      await expect(page.getByRole('heading', { name: title })).toBeVisible();
     });
   });
 
   casos.forEach(({ name, title }) => {
     test(`Leída Opción: ${name}`, async ({ page }) => {
-    await page.getByRole('link', { name }).click();
-    await expect(page.getByRole('heading', { name: title })).toBeVisible();
+      await page.getByRole('link', { name }).click();
+      await expect(page.getByRole('heading', { name: title })).toBeVisible();
     });
   });
 })
+
+test.describe('Ejemplo de PageObject', () => {
+  let app: AppPage
+
+  test.beforeEach('prepara el POM', async ({ page }) => {
+    app = new AppPage(page);
+  });
+
+  // eslint-disable-next-line playwright/expect-expect
+  test('navegación', async () => {
+    await app.goto()
+    await app.logout()
+    await app.gotoCalculadora()
+    await app.gotoAPIs()
+    await app.loginByIndex(3)
+    await app.gotoCompras()
+    await app.gotoContactos()
+    await app.gotoBiblioteca()
+    await app.logout()
+  });
+
+});

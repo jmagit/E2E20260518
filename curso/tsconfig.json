@@ -12,6 +12,7 @@
     "useUnknownInCatchVariables": false,
     "skipLibCheck": true,
     "types": [
+      "node",
       "node/globals"
     ]
   }
