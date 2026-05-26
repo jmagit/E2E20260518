@@ -64,6 +64,8 @@ test.describe('Opciones del menu', () => {
   });
 })
 
+test.use({ storageState: 'playwright/.auth/emp-storage-state.json' });
+
 test.describe('Ejemplo de PageObject', () => {
   let app: AppPage
 
@@ -82,6 +84,11 @@ test.describe('Ejemplo de PageObject', () => {
     await app.gotoContactos()
     await app.gotoBiblioteca()
     await app.logout()
+  });
+
+  test('auth', async () => {
+    await app.goto()
+    await app.gotoCalculadora()
   });
 
 });

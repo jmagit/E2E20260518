@@ -197,7 +197,7 @@ test.describe('Añadir limpiamente', () => {
 
 test.describe('modifica o borra datos existentes', () => {
 
-  test.beforeEach('prepara datos', async ({ page, request, authHeader }) => {
+  test.beforeEach('prepara datos', async ({ page, request, authHeader, }) => {
     await request.delete('/api/contactos/101', { ignoreHTTPSErrors: true, headers: authHeader })
     const response = await request.post('/api/contactos', {
       headers: { "content-type": "application/json" },

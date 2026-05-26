@@ -7,10 +7,12 @@ import { ContactosPage } from '../utils/contactos.page';
 test.describe('clock - simula el reloj', () => {
   test('fija la hora inicial, avanza el tiempo', async ({ page }) => {
     test.slow()
+    test.setTimeout(120_000)
     await page.clock.setFixedTime(new Date('2032-02-02T11:00:00'));
     await page.goto('/navegador');
     await expect(page.locator('#currentDate')).toContainText('2032-02-02T10:00');
     await expect(page.getByRole('contentinfo')).toContainText('© 2017-2032');
+    await page.clock.install();
     await page.clock.runFor('01:30')
     await expect(page.locator('#crono')).toHaveText('90 seconds');
     await page.clock.runFor('01:30')

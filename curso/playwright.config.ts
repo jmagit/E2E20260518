@@ -39,12 +39,23 @@ export default defineConfig({
     {
       name: 'chromium',
       dependencies: ['setup'],
-      use: { ...devices['Desktop Chrome'], locale: 'en-US',  },
+      use: { ...devices['Desktop Chrome']},
     },
+
+    // {
+    //   name: 'chromium-mobile',
+    //   dependencies: ['setup'],
+    //   use: { ...devices['Desktop Chrome'], 
+    //     locale: 'en-US', 
+    //     permissions: ['geolocation', 'notifications'], 
+    //     geolocation: { longitude: 12.492507, latitude: 41.889938 },
+    //     viewport: { width: 360, height: 640, },
+    //     },
+    // },
 
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: { ...devices['Desktop Firefox'], locale: 'es-ES' },
     },
 
     {

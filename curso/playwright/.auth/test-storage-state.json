@@ -1,0 +1,25 @@
+{
+  "cookies": [
+    {
+      "name": "Authorization",
+      "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0QGV4YW1wbGUuY29tIiwicm9sZXMiOlsiVXN1YXJpb3MiLCJFbXBsZWFkb3MiLCJBZG1pbmlzdHJhZG9yZXMiXSwiaWF0IjoxNzc5ODEwODgzLCJleHAiOjE3Nzk4MTExODMsImF1ZCI6ImF1dGhvcml6YXRpb24iLCJpc3MiOiJNaWNyb3NlcnZpY2lvc0pXVCJ9.qmX8KwX5ScqQKm4OA1AYbr6C8Nlfp35-7Yy9HNQjwfPH3B_nBxeinK1KEMBEe4p-rYijjyc_yeDK2CHH8i7PXEd4zn0DZJrIDjUw7-JmW8XKGBydV8Sui2PXywZo0RK8MT3ejURk-UXZxWOdN1FbvCZ4zepy06_53kEL3S8CN8-p46vZvgmBeMWYuLSFKYWl2R7nMkHvEwaXcoSEtmQkME5FXmFUI9lmthZYuNBtiRGOEQLDIgkKS9mzm8IaUxVi55Tl2K3palP5Y05B7x655v4YvmUY9nlRvRI-6Y2iEhZVH_fiotvxw63SRbChUTvCx6yRsIkn_z5Dnen7ifsuyA",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1779814483.752371,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://localhost:8181",
+      "localStorage": [
+        {
+          "name": "AuthService",
+          "value": "{\"isAuth\":true,\"authToken\":\"\",\"name\":\"Tester\",\"roles\":[\"Usuarios\",\"Empleados\",\"Administradores\"]}"
+        }
+      ]
+    }
+  ]
+}
